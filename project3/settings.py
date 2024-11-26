@@ -120,3 +120,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CSRF_TRUSTED_ORIGINS = ["https://8000-idx-mail-1732588454633.cluster-mwrgkbggpvbq6tvtviraw2knqg.cloudworkstations.dev"]
