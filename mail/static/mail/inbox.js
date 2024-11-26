@@ -23,11 +23,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+function show_view(view_name) {
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#detail-view').style.display = 'none';
+  document.querySelector(`#${view_name}`).style.display = 'block';
+}
+
 function compose_email() {
 
   // Show compose view and hide other views
-  document.querySelector('#emails-view').style.display = 'none';
-  document.querySelector('#compose-view').style.display = 'block';
+  show_view('compose-view');
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -38,8 +44,7 @@ function compose_email() {
 function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
-  document.querySelector('#emails-view').style.display = 'block';
-  document.querySelector('#compose-view').style.display = 'none';
+  show_view('emails-view');
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -81,7 +86,13 @@ function display_emails(mailbox) {
       emails.forEach(email => {
         const element = document.createElement('div');
         element.classList.add('email');
-        // If the view is inbox or archieve add bgcolor based on read or unread
+
+        // Take the user to email
+        element.onclick = () => {
+          view_email(email.id);
+        };
+
+        // If the view is inbox or archieve and mail is read
         if ((mailbox == 'inbox' || mailbox == 'archieve') && email.read) {
           element.classList.add('read-email');
         }
@@ -90,4 +101,22 @@ function display_emails(mailbox) {
       });
     }
   });
+}
+
+// TO DO 3: View Email
+function view_email(email_id) {
+  // Show display view and hide other views
+  show_view('detail-view');
+  
+  // Get the email
+  fetch('/emails/' + email_id)
+  .then(response => response.json())
+  .then(email => {
+     document.querySelector('#detail-sender').innerHTML = email.sender;
+     document.querySelector('#detail-subject').innerHTML = email.subject;
+     document.querySelector('#detail-timestamp').innerHTML = email.timestamp;
+     document.querySelector('#detail-body').innerHTML = email.body;
+  });
+
+
 }
