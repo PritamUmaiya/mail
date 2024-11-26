@@ -1,3 +1,17 @@
 textarea {
     min-height: 400px;
 }
+
+.email {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 2px solid #494949;
+}
+
+.read-email {
+    background-color: #e6e6e6;
+}

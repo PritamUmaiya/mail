@@ -43,8 +43,12 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  // Display mailbox
+  display_emails(mailbox);
 }
 
+// TO DO 1: Send Email
 function send_email(recipients,subject, body) {
   fetch('/emails', {
     method: 'POST',
@@ -63,5 +67,27 @@ function send_email(recipients,subject, body) {
       } else {
         alert(result['error']);
       }
+  });
+}
+
+// TO DO 2: Display Mailbox
+function display_emails(mailbox) {
+  fetch('/emails/' + mailbox)
+  .then(response => response.json())
+  .then(emails => {
+    if (emails.length === 0) {
+      document.querySelector('#emails-view').append('No emails.');
+    } else {
+      emails.forEach(email => {
+        const element = document.createElement('div');
+        element.classList.add('email');
+        // If the view is inbox or archieve add bgcolor based on read or unread
+        if ((mailbox == 'inbox' || mailbox == 'archieve') && email.read) {
+          element.classList.add('read-email');
+        }
+        element.innerHTML = `<span><strong>${email.sender}</strong> ${email.subject}</span> <span style="color:#494949;">${email.timestamp}</span>`;
+        document.querySelector('#emails-view').append(element);
+      });
+    }
   });
 }
