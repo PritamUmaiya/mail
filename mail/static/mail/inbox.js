@@ -89,7 +89,7 @@ function display_emails(mailbox) {
 
         // Take the user to email
         element.onclick = () => {
-          view_email(email.id);
+          view_email(email.id, mailbox);
         };
 
         // If the view is inbox or archieve and mail is read
@@ -104,7 +104,7 @@ function display_emails(mailbox) {
 }
 
 // TO DO 3: View Email
-function view_email(email_id) {
+function view_email(email_id, mailbox) {
   // Show display view and hide other views
   show_view('detail-view');
   
@@ -113,10 +113,32 @@ function view_email(email_id) {
   .then(response => response.json())
   .then(email => {
      document.querySelector('#detail-sender').innerHTML = email.sender;
+     document.querySelector('#detail-recipients').innerHTML = email.recipients;
      document.querySelector('#detail-subject').innerHTML = email.subject;
      document.querySelector('#detail-timestamp').innerHTML = email.timestamp;
      document.querySelector('#detail-body').innerHTML = email.body;
+
+     if (!email.read && mailbox === 'inbox') {
+       mark_as_read(email_id);
+     }
+     // Toggle Archive, Unarchive Button
+    if (mailbox === 'inbox' || mailbox === 'archived') {
+      if (email.archived) {
+        document.querySelector('#archiveBtn').classList.add('d-none');
+        document.querySelector('#unarchiveBtn').classList.remove('d-none');
+      } else {
+        document.querySelector('#archiveBtn').classList.remove('d-none');
+        document.querySelector('#unarchiveBtn').classList.add('d-none');
+      }
+    }
   });
+}
 
-
+function mark_as_read(email_id) {
+  fetch('/emails/' + email_id, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
 }
