@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
 
+  // Email Archive and Unarchive buttons
+  document.querySelector('#archiveBtn').addEventListener('click', archive_email);
+  document.querySelector('#unarchiveBtn').addEventListener('click', unarchive_email);
+
   // By default, load the inbox
   load_mailbox('inbox');
 
@@ -93,7 +97,7 @@ function display_emails(mailbox) {
         };
 
         // If the view is inbox or archieve and mail is read
-        if ((mailbox == 'inbox' || mailbox == 'archieve') && email.read) {
+        if ((mailbox == 'inbox' || mailbox == 'archive') && email.read) {
           element.classList.add('read-email');
         }
         element.innerHTML = `<span><strong>${email.sender}</strong> ${email.subject}</span> <span style="color:#494949;">${email.timestamp}</span>`;
@@ -118,19 +122,23 @@ function view_email(email_id, mailbox) {
      document.querySelector('#detail-timestamp').innerHTML = email.timestamp;
      document.querySelector('#detail-body').innerHTML = email.body;
 
-     if (!email.read && mailbox === 'inbox') {
-       mark_as_read(email_id);
-     }
-     // Toggle Archive, Unarchive Button
-    if (mailbox === 'inbox' || mailbox === 'archived') {
+    if (!email.read && mailbox === 'inbox') {
+      mark_as_read(email_id);
+    }
+
+    // Toggle Archive, Unarchive Button
+    if (mailbox === 'inbox' || mailbox === 'archive') {
       if (email.archived) {
         document.querySelector('#archiveBtn').classList.add('d-none');
         document.querySelector('#unarchiveBtn').classList.remove('d-none');
+        document.querySelector('#unarchiveBtn').dataset.mailid = email_id;
       } else {
         document.querySelector('#archiveBtn').classList.remove('d-none');
         document.querySelector('#unarchiveBtn').classList.add('d-none');
+        document.querySelector('#archiveBtn').dataset.mailid = email_id;
       }
     }
+
   });
 }
 
@@ -141,4 +149,29 @@ function mark_as_read(email_id) {
         read: true
     })
   })
+}
+
+// TO TO 4: Archive and Unarchive 
+function archive_email() {
+  fetch('/emails/' + this.dataset.mailid, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: true
+    })
+  })
+
+  // Load users inbox
+  load_mailbox('inbox');
+}
+
+function unarchive_email() {
+  fetch('/emails/' + this.dataset.mailid, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: false
+    })
+  })
+
+  // Load users inbox
+  load_mailbox('inbox');
 }
