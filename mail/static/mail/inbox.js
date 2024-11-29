@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
 
-  // Email Archive and Unarchive buttons
+  // Email Archive, Unarchive buttons action
   document.querySelector('#archiveBtn').addEventListener('click', archive_email);
   document.querySelector('#unarchiveBtn').addEventListener('click', unarchive_email);
 
@@ -138,6 +138,29 @@ function view_email(email_id, mailbox) {
         document.querySelector('#archiveBtn').dataset.mailid = email_id;
       }
     }
+    else {
+      document.querySelector('#archiveBtn').classList.add('d-none');
+      document.querySelector('#unarchiveBtn').classList.add('d-none');
+    }
+
+    // TO DO 5: Reply to an email
+    document.querySelector('#reply').addEventListener('click', () => {
+      compose_email();
+      // Get the details to reply field
+      if (mailbox === 'sent') {
+        document.querySelector('#compose-recipients').value = email.recipients;
+      }
+      else {
+        document.querySelector('#compose-recipients').value = email.sender;
+      }
+      if (email.subject.startsWith('Re:')) {
+        document.querySelector('#compose-subject').value = email.subject;
+      } else {
+        document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+      }
+      document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote:\n${email.body}`;
+
+    });
 
   });
 }
